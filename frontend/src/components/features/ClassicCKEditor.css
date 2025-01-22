@@ -1,0 +1,52 @@
+@media print {
+  body {
+    margin: 0 !important;
+  }
+}
+
+.main-container {
+  max-width: 100%;
+}
+
+/* .editor-container {
+  width: 100%;
+  max-width: 100%;
+} */
+
+.ck-content {
+  color: black;
+  line-height: 1.6;
+  word-break: break-word;
+  min-height: 150px;
+}
+
+.editor-container_classic-editor .editor-container__editor {
+  width: 100%;
+}
+
+.editor_container__word-count .ck-word-count {
+  color: white;
+  display: flex;
+  height: 30px;
+  gap: var(--ck-spacing-medium);
+  justify-content: flex-end;
+  font-size: var(--ck-font-size-base);
+  line-height: var(--ck-line-height-base);
+  padding: var(--ck-spacing-small) var(--ck-spacing-standard);
+}
+
+/* .editor-container_include-word-count.editor-container_classic-editor
+  .editor_container__word-count {
+  border: 1px solid var(--ck-color-base-border);
+  border-radius: var(--ck-border-radius);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-top: none;
+} */
+
+/* .editor-container_include-word-count.editor-container_classic-editor
+  .editor-container__editor
+  .ck-editor
+  .ck-editor__editable {
+  border-radius: 0;
+} */

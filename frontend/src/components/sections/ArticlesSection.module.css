@@ -1,0 +1,23 @@
+/* Articles Section */
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.moreBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  color: #fff;
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: 300;
+  font-size: 1.3rem;
+  margin-top: 50px;
+}
+
+.moreBtn:hover {
+  color: #ffffffbc;
+}

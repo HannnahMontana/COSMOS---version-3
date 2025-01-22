@@ -1,0 +1,13 @@
+.section {
+  background-color: #141414;
+  padding-top: 20px;
+}
+.section p {
+  line-height: 1.6;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.797);
+}
+.section h5 {
+  margin-bottom: 14px;
+  margin-top: 50px;
+}

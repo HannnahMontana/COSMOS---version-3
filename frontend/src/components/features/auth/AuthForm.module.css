@@ -1,0 +1,33 @@
+.loginForm {
+  padding: 0 10%;
+}
+.registerForm {
+  padding: 0 3%;
+}
+
+.loginForm label,
+.registerForm label {
+  font-weight: 400;
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.inputField {
+  background-color: rgba(255, 255, 255, 0.275);
+  border: none;
+  border-radius: 0;
+  color: #efefef;
+}
+
+.errorList {
+  color: #ffffffc0;
+  list-style-type: none;
+  margin-top: 14px;
+  padding: 0;
+  text-shadow: 2px 2px 4px rgb(0, 0, 0);
+}
+
+.errorList li {
+  margin: 5px 0;
+  /* background-color: #00000060; */
+}

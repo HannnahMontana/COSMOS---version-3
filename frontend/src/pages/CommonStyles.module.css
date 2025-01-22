@@ -1,0 +1,10 @@
+.pageHeading {
+  margin: 40px 20% 0 20%;
+  font-size: 5.2rem;
+  max-width: 890px;
+}
+@media (max-width: 991.98px) {
+  .pageHeading {
+    margin: 20px 10% 0 10%;
+  }
+}

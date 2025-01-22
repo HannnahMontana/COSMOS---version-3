@@ -1,0 +1,19 @@
+.addForm label,
+.addForm input {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.addForm label {
+  font-weight: 400;
+  font-size: 1.4rem;
+  text-transform: uppercase;
+}
+.addForm input[type="text"] {
+  width: 100%;
+  padding: 6px;
+}
+
+.submitBtn {
+  margin-top: 20px;
+}

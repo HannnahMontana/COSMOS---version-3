@@ -1,0 +1,65 @@
+.auth {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.loginPanel,
+.registerPanel {
+  position: relative;
+  z-index: 2;
+  background-color: rgba(0, 0, 0, 0.275);
+  backdrop-filter: blur(5px);
+  padding: 25px 0 40px 0;
+  margin-top: -150px;
+}
+.loginPanel {
+  width: 650px;
+}
+.registerPanel {
+  width: 800px;
+}
+/* .success-panel {
+  width: 700px;
+} */
+
+/* .register-link-login-success {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 7%;
+} */
+/* .register-link-login-success, */
+.linkAuth {
+  text-transform: uppercase;
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+.linkAuth {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  margin: 50px;
+  backdrop-filter: blur(5px);
+  text-shadow: 2px 2px 4px rgb(0, 0, 0);
+  z-index: 3;
+}
+.underlined {
+  text-decoration: underline;
+  color: #fff;
+}
+.underlined:hover {
+  color: #ffffff8b;
+}
+
+.loginPanel h1,
+.registerPanel h1
+/* .success-panel h2  */ {
+  font-size: 5rem;
+  font-weight: 300;
+  margin-bottom: 60px;
+  text-align: center;
+}
+.loginPanel h1,
+.registerPanel h1 {
+  font-size: 5rem;
+}

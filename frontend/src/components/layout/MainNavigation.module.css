@@ -1,0 +1,30 @@
+/* Navbar */
+.mainNavbar {
+  background-color: rgba(0, 0, 0, 0.7);
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  border-bottom: solid #ffffff89 1px;
+  padding: 10px 50px;
+  z-index: 10;
+  backdrop-filter: blur(3px);
+}
+.mainNavbarBrand {
+  font-weight: 700;
+}
+.mainNavItem {
+  margin: auto 20px;
+}
+.mainNavLink {
+  color: #ffffffa0;
+  cursor: pointer;
+}
+.mainNavLink:hover {
+  color: #ffffffdc;
+}
+.active {
+  color: #fff;
+}
+.navLinkBtn {
+  color: #ffffffa0;
+  text-transform: uppercase;
+}

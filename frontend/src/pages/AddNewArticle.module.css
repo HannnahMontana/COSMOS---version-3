@@ -1,0 +1,14 @@
+.addArticleContainer {
+  padding-right: 30%;
+}
+
+.heading {
+  margin-bottom: 60px;
+  max-width: 500px;
+}
+
+@media (max-width: 991.98px) {
+  .addArticleContainer {
+    padding-right: 10%;
+  }
+}

@@ -1,0 +1,12 @@
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.vcxproj.user
+bin/
+obj/
+
+# Node.js files (dla Reacta)
+frontend/node_modules/
+frontend/build/
+frontend/.env

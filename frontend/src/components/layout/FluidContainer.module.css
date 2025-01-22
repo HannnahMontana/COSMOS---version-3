@@ -1,0 +1,10 @@
+.fluidContainer {
+  padding: 6% 20%;
+}
+
+/* Tablet */
+@media (max-width: 991.98px) {
+  .fluidContainer {
+    padding: 5% 10%;
+  }
+}
