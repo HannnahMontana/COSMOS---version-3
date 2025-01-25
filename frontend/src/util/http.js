@@ -145,34 +145,33 @@ export async function deleteArticle(id) {
   return response.json();
 }
 
-export async function fetchSession(fetchUser, clearUser) {
+export async function fetchSession() {
   try {
     console.log("fetching session");
-    const response = await fetch("https://localhost:8080/Auth/check-auth", {
+    const response = await fetch("http://localhost:8080/Auth/check-auth", {
       method: "GET",
       credentials: "include",
     });
 
     console.log("response", response);
     if (response.ok) {
-      console.log("Session valid, fetching user data...");
-      const data = await response.json();
-      console.log("User session active:", data);
-      fetchUser(data.userId);
+      console.log("Session valid");
+      return true;
     } else {
-      console.log("Session not valid, clearing user...");
-      clearUser();
+      console.log("Session not valid");
+      return false;
     }
   } catch (error) {
     console.error("Error during session check:", error);
-    clearUser();
+    return false;
   }
 }
 
-export async function fetchUserData(token) {
+export async function fetchUserData() {
   try {
-    const response = await fetch("http://localhost:8080/user", {
-      headers: { Authorization: `Bearer ${token}` },
+    const response = await fetch("http://localhost:8080/User/current-user", {
+      method: "GET",
+      credentials: "include",
     });
 
     if (!response.ok) {
@@ -180,10 +179,29 @@ export async function fetchUserData(token) {
     }
 
     const userData = await response.json();
+    console.log("userData from fetchUserData", userData);
     return userData;
   } catch (error) {
     console.error(error);
     return null;
+  }
+}
+
+export async function logout() {
+  try {
+    const response = await fetch("http://localhost:8080/Auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      throw new Error("Błąd podczas wylogowywania.");
+    }
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
   }
 }
 

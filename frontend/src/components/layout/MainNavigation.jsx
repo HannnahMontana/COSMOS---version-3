@@ -4,10 +4,15 @@ import classes from "./MainNavigation.module.css";
 import { UserContext } from "../../context/UserContext";
 
 export default function MainNavigation() {
-  const token = useRouteLoaderData("root");
-  const { isAdmin } = useContext(UserContext);
+  const { user, clearUser, isAdmin } = useContext(UserContext);
 
+  console.log("MainNavigation user", user);
   console.log("MainNavigation admin", isAdmin);
+
+  const handleLogout = () => {
+    console.log("Clearing user from context...");
+    clearUser();
+  };
 
   return (
     <header>
@@ -58,7 +63,7 @@ export default function MainNavigation() {
                 Kontakt
               </NavLink>
             </li>
-            {isAdmin && token && (
+            {isAdmin && user && (
               <li className={`nav-item ${classes.mainNavItem}`}>
                 <NavLink
                   className={`nav-link ${classes.mainNavLink} ${({
@@ -70,7 +75,7 @@ export default function MainNavigation() {
                 </NavLink>
               </li>
             )}
-            {!token && (
+            {!user && (
               <li className={`nav-item ${classes.mainNavItem}`}>
                 <NavLink
                   className={`nav-link ${classes.mainNavLink} ${({
@@ -82,9 +87,9 @@ export default function MainNavigation() {
                 </NavLink>
               </li>
             )}
-            {token && (
+            {user && (
               <li className={`nav-item ${classes.mainNavItem}`}>
-                <Form action="/logout" method="post">
+                <Form action="/logout" method="post" onSubmit={handleLogout}>
                   <button className={`nav-link ${classes.navLinkBtn}`}>
                     Wyloguj się
                   </button>

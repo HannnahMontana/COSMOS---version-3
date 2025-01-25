@@ -1,13 +1,23 @@
 import { redirect } from "react-router-dom";
+import { logout } from "../util/http";
 
-export function action() {
+export async function action() {
   console.log("logout action");
   console.log("Logging out...");
 
-  localStorage.removeItem("token");
-  localStorage.removeItem("expiration");
+  try {
+    const success = await logout();
 
-  console.log("Logged out.");
-  console.log("Redirecting to /");
-  return redirect("/");
+    if (!success) {
+      throw new Error("Error logging out.");
+    }
+
+    console.log("Logged out.");
+    console.log("Redirecting to /");
+
+    return redirect("/");
+  } catch (error) {
+    console.error("Error logging out:", error);
+    return redirect("/");
+  }
 }

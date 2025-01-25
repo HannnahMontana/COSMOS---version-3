@@ -3,14 +3,13 @@ import { fetchUserData } from "../util/http";
 
 export const UserContext = createContext();
 
-// tu bedzie zmiana is_admin - bedzie pobierac to z backendu
-
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const updateUser = (userData) => {
     console.log("Updating user data", userData);
+    console.log("User roles", userData?.roles);
     setUser(userData);
     setLoading(false);
   };
@@ -21,10 +20,10 @@ export function UserProvider({ children }) {
     setLoading(false);
   };
 
-  const fetchUser = async (userId) => {
+  const fetchUser = async () => {
     setLoading(true);
     try {
-      const userData = await fetchUserData(userId);
+      const userData = await fetchUserData();
       updateUser(userData);
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -42,7 +41,7 @@ export function UserProvider({ children }) {
         clearUser,
         loading,
         fetchUser,
-        isAdmin: user?.is_admin,
+        isAdmin: user?.roles.includes("Admin"),
       }}
     >
       {children}

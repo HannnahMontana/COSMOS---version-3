@@ -23,33 +23,34 @@ namespace backend.Controllers
         [HttpPost("signup")]
         public async Task<IActionResult> Signup([FromBody] UserDto userDto)
         {
-            Console.WriteLine("rejestrowanie uzytkowika...");
+            Console.WriteLine("Rejestrowanie użytkownika...");
             if (!ModelState.IsValid)
             {
-                Console.WriteLine("Bledne dane rejestracji");
+                Console.WriteLine("Błędne dane rejestracji");
                 return BadRequest(new { message = "Błędne dane rejestracji.", errors = ModelState.Values });
             }
 
             var user = new User
             {
                 UserName = userDto.Username,
-                //IsAdmin = userDto.IsAdmin
             };
 
             var result = await _userManager.CreateAsync(user, userDto.Password);
-            Console.WriteLine("result: " + result);
 
             if (!result.Succeeded)
             {
-                Console.WriteLine("Nie udało sie");
+                Console.WriteLine("Nie udało się zarejestrować użytkownika");
                 return BadRequest(new { message = "Rejestracja nie powiodła się.", errors = result.Errors });
             }
 
-            // logowanie
+            // logowanie po rejestracji
             await _signInManager.SignInAsync(user, isPersistent: false);
 
-            // cookie
-            Response.Cookies.Append("auth_cookie", user.Id, new CookieOptions
+            // dodanie informacji o użytkowniku do sesji
+            HttpContext.Session.SetString("user_id", user.Id);
+
+            // dodanie ciasteczka
+            Response.Cookies.Append("session_active", "true", new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
@@ -57,15 +58,11 @@ namespace backend.Controllers
                 Expires = DateTime.UtcNow.AddHours(1)
             });
 
-            //if (userDto.IsAdmin)
-            //{
-            //    await _userManager.AddToRoleAsync(user, "Admin");
-            //}
+            Console.WriteLine("Rejestracja zakończona sukcesem, użytkownik zalogowany.");
 
-            Console.WriteLine("rejestracja udana");
-
-            return Ok(new { message = "Rejestracja zakończona sukcesem." });
+            return Ok(new { message = "Rejestracja i logowanie zakończone sukcesem." });
         }
+
 
         // logowanie
         [HttpPost("login")]
@@ -89,8 +86,11 @@ namespace backend.Controllers
                 return Unauthorized(new { message = "Błędna nazwa użytkownika lub hasło." });
             }
 
-            // dodanie cookie
-            Response.Cookies.Append("auth_cookie", user.Id, new CookieOptions
+            // dodanie id usera do sesji
+            HttpContext.Session.SetString("user_id", user.Id);
+
+            // dodanie ciasteczka
+            Response.Cookies.Append("session_active", "true", new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
@@ -101,6 +101,7 @@ namespace backend.Controllers
             return Ok(new { message = "Zalogowano pomyślnie." });
         }
 
+
         // wylogowanie
         [HttpPost("logout")]
         [Authorize]
@@ -108,25 +109,27 @@ namespace backend.Controllers
         {
             await _signInManager.SignOutAsync();
 
-            // usuniecie cookie
-            Response.Cookies.Delete("auth_cookie");
+            HttpContext.Session.Remove("user_id");
+            Response.Cookies.Delete("session_active");
 
             return Ok(new { message = "Wylogowano pomyślnie." });
         }
+
 
         // sprawdzenie czy user jest zalogowany
         [HttpGet("check-auth")]
         [Authorize]
         public IActionResult CheckAuth()
         {
-            var userId = User.Identity?.Name;
+            var userId = HttpContext.Session.GetString("user_id");
 
-            if (!string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized(new { message = "Użytkownik nie jest zalogowany." });
             }
 
             return Ok(new { message = "Użytkownik jest zalogowany.", userId });
         }
+
     }
 }

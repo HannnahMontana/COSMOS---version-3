@@ -17,17 +17,29 @@ namespace backend.Controllers
         }
 
         // pobiera aktualnie zalogowanego usera
-        [HttpGet("current")]
+        [HttpGet("current-user")]
         [Authorize]
         public async Task<IActionResult> GetCurrentUser()
         {
-            var userId = User.Identity?.Name; // pobierz id z tokena
+            // sprawdzenie, czy sesja istnieje
+            var userId = HttpContext.Session.GetString("user_id");
+
             if (string.IsNullOrEmpty(userId))
             {
-                return Unauthorized(new { message = "Nie jesteś zalogowany." });
+                // sesja wygasla - unauthorized
+                return Unauthorized(new { message = "Sesja wygasła lub użytkownik nie jest zalogowany." });
             }
 
-            var user = await _userManager.FindByIdAsync(userId); 
+            // pobierz username
+            var userName = User.Identity?.Name;
+
+            if (string.IsNullOrEmpty(userName))
+            {
+                return Unauthorized(new { message = "Użytkownik nie jest zalogowany." });
+            }
+
+            var user = await _userManager.FindByNameAsync(userName);
+
             if (user == null)
             {
                 return NotFound(new { message = "Nie znaleziono użytkownika." });
@@ -36,8 +48,10 @@ namespace backend.Controllers
             return Ok(new
             {
                 id = user.Id,
-                username = user.UserName
+                username = user.UserName,
+                roles = await _userManager.GetRolesAsync(user)
             });
         }
+
     }
 }

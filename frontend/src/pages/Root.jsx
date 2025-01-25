@@ -1,9 +1,4 @@
-import {
-  Outlet,
-  useLocation,
-  useLoaderData,
-  useSubmit,
-} from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { useEffect, useContext } from "react";
 
 import MainNavigation from "../components/layout/MainNavigation";
@@ -14,9 +9,7 @@ import { fetchSession } from "../util/http";
 function RootLayout() {
   const { hash, pathname } = useLocation();
   const { user, fetchUser, clearUser } = useContext(UserContext);
-
-  const token = useLoaderData();
-  const submit = useSubmit();
+  const location = useLocation();
 
   // scrolling to element with id from hash
   useEffect(() => {
@@ -32,10 +25,26 @@ function RootLayout() {
   useEffect(() => {
     console.log("root user data fetching.");
 
+    const initializeUserSession = async () => {
+      console.log("Initializing user session...");
+      const sessionActive = await fetchSession();
+
+      console.log("Session active:", sessionActive);
+
+      if (sessionActive) {
+        console.log("Session is active, fetching user data...");
+        fetchUser();
+      } else {
+        console.log("No active session, clearing user...");
+        clearUser();
+      }
+    };
+
     if (!user) {
-      fetchSession(fetchUser, clearUser);
+      console.log("No user data, initializing user session...");
+      initializeUserSession();
     }
-  }, [user, fetchUser, clearUser]);
+  }, [user, fetchUser, clearUser, location.pathname]);
 
   const showFooter = !pathname.startsWith("/auth");
 
