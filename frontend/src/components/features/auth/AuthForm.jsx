@@ -13,13 +13,23 @@ export default function AuthForm({ isLogin }) {
 
   const isSubmitting = navigation.state === "submitting";
 
-  const errorMessages = data && data.errors && (
-    <ul className={classes.errorList}>
-      {Object.values(data.errors).map((err) => (
-        <li key={err}>{err}</li>
-      ))}
-    </ul>
-  );
+  console.log("AuthForm data", data);
+
+  const errorMessages =
+    data?.message || data?.errors ? (
+      <>
+        {data.message && (
+          <p className={classes.errorParagraph}>{data.message}</p>
+        )}
+        {data.errors?.length > 0 && (
+          <ul className={classes.errorList}>
+            {data.errors.map(({ code, description }) => (
+              <li key={code}>{description}</li>
+            ))}
+          </ul>
+        )}
+      </>
+    ) : null;
 
   return (
     <Form

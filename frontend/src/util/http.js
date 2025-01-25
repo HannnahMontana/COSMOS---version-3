@@ -145,6 +145,30 @@ export async function deleteArticle(id) {
   return response.json();
 }
 
+export async function fetchSession(fetchUser, clearUser) {
+  try {
+    console.log("fetching session");
+    const response = await fetch("https://localhost:8080/Auth/check-auth", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    console.log("response", response);
+    if (response.ok) {
+      console.log("Session valid, fetching user data...");
+      const data = await response.json();
+      console.log("User session active:", data);
+      fetchUser(data.userId);
+    } else {
+      console.log("Session not valid, clearing user...");
+      clearUser();
+    }
+  } catch (error) {
+    console.error("Error during session check:", error);
+    clearUser();
+  }
+}
+
 export async function fetchUserData(token) {
   try {
     const response = await fetch("http://localhost:8080/user", {
@@ -163,24 +187,24 @@ export async function fetchUserData(token) {
   }
 }
 
-export async function fetchUsernameById(id) {
-  try {
-    console.log("fetching username for id", id);
+// export async function fetchUsernameById(id) {
+//   try {
+//     console.log("fetching username for id", id);
 
-    const response = await fetch(`http://localhost:8080/users/${id}/username`);
+//     const response = await fetch(`http://localhost:8080/users/${id}/username`);
 
-    console.log("response", response);
+//     console.log("response", response);
 
-    if (!response.ok) {
-      throw new Error("Błąd podczas pobierania nazwy użytkownika.");
-    }
+//     if (!response.ok) {
+//       throw new Error("Błąd podczas pobierania nazwy użytkownika.");
+//     }
 
-    const data = await response.json();
+//     const data = await response.json();
 
-    console.log("data", data);
-    return data.username;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}
+//     console.log("data", data);
+//     return data.username;
+//   } catch (error) {
+//     console.error(error);
+//     return null;
+//   }
+// }

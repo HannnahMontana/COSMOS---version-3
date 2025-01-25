@@ -59,13 +59,18 @@ export async function action({ request }) {
   if (mode === "signup" && authData.password !== authData.password2) {
     console.log("passwords do not match");
     return {
-      errors: {
-        password2: "Hasła muszą być identyczne.",
-      },
+      errors: [
+        {
+          code: "passwords-not-match",
+          description: "Hasła muszą być identyczne.",
+        },
+      ],
     };
   }
 
-  const response = await fetch("http://localhost:8080/" + mode, {
+  delete authData.password2;
+
+  const response = await fetch("https://localhost:8080/Auth/" + mode, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -73,9 +78,10 @@ export async function action({ request }) {
     body: JSON.stringify(authData),
   });
 
-  console.log(response);
+  console.log("response: ", response);
+  console.log("response erros: ", response?.errors);
 
-  if (response.status === 422 || response.status === 401) {
+  if (response.status === 400 || response.status === 401) {
     return response;
   }
 
@@ -89,18 +95,16 @@ export async function action({ request }) {
     );
   }
 
-  const resData = await response.json();
-  const token = resData.token;
+  // const resData = await response.json();
+  // const token = resData.token;
 
-  console.log(resData);
-  console.log(token);
+  // console.log("resData:", resData);
+  // console.log(token);
 
-  localStorage.setItem("token", token);
-  const expiration = new Date();
-  expiration.setHours(expiration.getHours() + 1);
-  localStorage.setItem("expiration", expiration.toISOString());
-
-  console.log("redirecting");
+  // localStorage.setItem("token", token);
+  // const expiration = new Date();
+  // expiration.setHours(expiration.getHours() + 1);
+  // localStorage.setItem("expiration", expiration.toISOString());
 
   return redirect("/");
 }

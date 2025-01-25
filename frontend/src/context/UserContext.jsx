@@ -3,6 +3,8 @@ import { fetchUserData } from "../util/http";
 
 export const UserContext = createContext();
 
+// tu bedzie zmiana is_admin - bedzie pobierac to z backendu
+
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,20 +21,10 @@ export function UserProvider({ children }) {
     setLoading(false);
   };
 
-  // const fetchUser = async () => {
-  //   setLoading(true);
-  //   const userData = await fetchUserData(token);
-  //   if (userData) {
-  //     updateUser(userData);
-  //   } else {
-  //     clearUser();
-  //   }
-  // };
-
-  const fetchUser = async (token) => {
+  const fetchUser = async (userId) => {
     setLoading(true);
     try {
-      const userData = await fetchUserData(token);
+      const userData = await fetchUserData(userId);
       updateUser(userData);
     } catch (error) {
       console.error("Error fetching user data:", error);

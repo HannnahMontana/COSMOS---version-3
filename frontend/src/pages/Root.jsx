@@ -8,8 +8,8 @@ import { useEffect, useContext } from "react";
 
 import MainNavigation from "../components/layout/MainNavigation";
 import Footer from "../components/layout/Footer";
-import { getTokenDuration } from "../util/auth";
 import { UserContext } from "../context/UserContext";
+import { fetchSession } from "../util/http";
 
 function RootLayout() {
   const { hash, pathname } = useLocation();
@@ -30,38 +30,12 @@ function RootLayout() {
 
   // token menagement and user data fetching
   useEffect(() => {
-    console.log("root token menagement and user data fetching.");
+    console.log("root user data fetching.");
 
-    if (!token) {
-      console.log("no token and no user");
-      clearUser();
+    if (!user) {
+      fetchSession(fetchUser, clearUser);
     }
-
-    if (!token || user) {
-      console.log("no token or user");
-      console.log(user);
-      return;
-    }
-
-    console.log("checking if token is expired");
-    if (token === "EXPIRED") {
-      console.log("token expired");
-      submit(null, { action: "/logout", method: "post" });
-      return;
-    }
-
-    const tokenDuration = getTokenDuration();
-    console.log("token duration: ", tokenDuration);
-
-    console.log("fetching user data...");
-    // fetch user data
-    fetchUser(token);
-
-    // logout after token expiration
-    setTimeout(() => {
-      submit(null, { action: "/logout", method: "post" });
-    }, tokenDuration);
-  }, [token, submit, user, fetchUser, clearUser]);
+  }, [user, fetchUser, clearUser]);
 
   const showFooter = !pathname.startsWith("/auth");
 
