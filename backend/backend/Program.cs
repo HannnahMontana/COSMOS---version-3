@@ -75,6 +75,17 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(60);
 });
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/auth/login"; 
+    options.LogoutPath = "/auth/logout"; 
+    options.ExpireTimeSpan = TimeSpan.FromHours(1); 
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.None; 
+    options.Cookie.SameSite = SameSiteMode.Strict;
+});
+
+
 var app = builder.Build();
 
 // HTTP request 
