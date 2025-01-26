@@ -44,7 +44,7 @@ export default function ArticleForm({ inputData = null, onSubmit }) {
         type="text"
         name="bannerUrl"
         id="bannerUrl"
-        defaultValue={inputData?.banner_url || ""}
+        defaultValue={inputData?.bannerUrl || ""}
         required
       />
 

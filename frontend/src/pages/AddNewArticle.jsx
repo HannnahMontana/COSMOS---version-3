@@ -1,7 +1,11 @@
 import { useContext } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
-import { createNewArticle, queryClient } from "../util/http";
+import { useNavigate } from "react-router-dom";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  createNewArticle,
+  fetchCountArticlesAboveAverage,
+  queryClient,
+} from "../util/http";
 import { UserContext } from "../context/UserContext";
 
 import FluidContainer from "../components/layout/FluidContainer";
@@ -13,6 +17,19 @@ export default function AddNewArticle() {
   const navigate = useNavigate();
   const { isAdmin, user } = useContext(UserContext);
 
+  // articles above average
+  const {
+    data: articleCount,
+    isLoading,
+    isError: isCountError,
+    error: countError,
+  } = useQuery({
+    queryKey: ["articlesAboveAverage", user?.id],
+    queryFn: fetchCountArticlesAboveAverage,
+    enabled: !!user?.id,
+  });
+
+  // create new article
   const { mutate, isPending, isError, error } = useMutation({
     mutationFn: createNewArticle,
     onSuccess: () => {
@@ -22,7 +39,7 @@ export default function AddNewArticle() {
   });
 
   function handleSubmit(formData) {
-    mutate({ article: formData });
+    mutate(formData);
   }
 
   if (!user || !isAdmin) {
@@ -36,6 +53,12 @@ export default function AddNewArticle() {
         sectionId="section-add-article"
         addedClasses={classes.addArticleContainer}
       >
+        <p>
+          {isLoading && "Ładowanie liczby artykułów powyżej średniej..."}
+          {isCountError && `Błąd: ${countError.message}`}
+          {articleCount !== undefined &&
+            `Liczba artykułów powyżej średniej długości: ${articleCount}`}
+        </p>
         <ArticleForm onSubmit={handleSubmit} />
         {isPending && <p>Wysyłanie...</p>}
         {isError && (

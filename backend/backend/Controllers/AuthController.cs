@@ -26,7 +26,6 @@ namespace backend.Controllers
             Console.WriteLine("Rejestrowanie użytkownika...");
             if (!ModelState.IsValid)
             {
-                Console.WriteLine("Błędne dane rejestracji");
                 return BadRequest(new { message = "Błędne dane rejestracji.", errors = ModelState.Values });
             }
 
@@ -39,8 +38,14 @@ namespace backend.Controllers
 
             if (!result.Succeeded)
             {
-                Console.WriteLine("Nie udało się zarejestrować użytkownika");
                 return BadRequest(new { message = "Rejestracja nie powiodła się.", errors = result.Errors });
+            }
+
+            // przypisanie roli User
+            var roleResult = await _userManager.AddToRoleAsync(user, "User");
+            if (!roleResult.Succeeded)
+            {
+                return BadRequest(new { message = "Nie udało się przypisać roli 'User'.", errors = roleResult.Errors });
             }
 
             // logowanie po rejestracji
@@ -57,8 +62,6 @@ namespace backend.Controllers
                 SameSite = SameSiteMode.Strict,
                 Expires = DateTime.UtcNow.AddHours(1)
             });
-
-            Console.WriteLine("Rejestracja zakończona sukcesem, użytkownik zalogowany.");
 
             return Ok(new { message = "Rejestracja i logowanie zakończone sukcesem." });
         }
@@ -131,5 +134,32 @@ namespace backend.Controllers
             return Ok(new { message = "Użytkownik jest zalogowany.", userId });
         }
 
+
+        // dodanie roli Admin do usera
+        [HttpPost("add-admin-role")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AddAdminRole([FromBody] string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                return NotFound(new { message = "Użytkownik nie znaleziony." });
+            }
+
+            // sprawdzenie czy juz posiada role admin
+            if (await _userManager.IsInRoleAsync(user, "Admin"))
+            {
+                return BadRequest(new { message = "Użytkownik już posiada rolę Admin." });
+            }
+
+            // przypisuje role admin
+            var result = await _userManager.AddToRoleAsync(user, "Admin");
+            if (!result.Succeeded)
+            {
+                return BadRequest(new { message = "Nie udało się przypisać roli Admin.", errors = result.Errors });
+            }
+
+            return Ok(new { message = $"Rola 'Admin' została przypisana użytkownikowi o nazwie '{username}'." });
+        }
     }
 }

@@ -62,21 +62,18 @@ export default function Article() {
 
   if (data) {
     console.log("data", data);
-    const formattedDate = new Date(data.created_at).toLocaleDateString(
-      "pl-PL",
-      {
-        dateStyle: "long",
-      }
-    );
+    const formattedDate = new Date(data.createdAt).toLocaleDateString("pl-PL", {
+      dateStyle: "long",
+    });
 
     content = (
       <>
         <ArticleTitleSection
           title={data.title}
           subtitle={data.subtitle}
-          image={data.banner_url}
+          image={data.bannerUrl}
           altText={data.title}
-          author={data.author}
+          author={data.author.userName}
           date={formattedDate}
         />
         {isAdmin && (

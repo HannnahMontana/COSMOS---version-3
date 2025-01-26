@@ -4,7 +4,7 @@ import { getAuthToken } from "./auth";
 export const queryClient = new QueryClient();
 
 export async function fetchArticles({ signal, limit, offset }) {
-  let url = "http://localhost:8080/articles";
+  let url = "http://localhost:8080/Articles";
 
   if (limit && offset) {
     url += "?limit=" + limit + "&offset=" + offset;
@@ -33,11 +33,11 @@ export async function fetchArticles({ signal, limit, offset }) {
 export async function fetchArticle({ id, signal }) {
   console.log("fetching article id", id);
 
-  const response = await fetch(`http://localhost:8080/articles/${id}`, {
+  const response = await fetch(`http://localhost:8080/Articles/${id}`, {
     signal,
   });
 
-  console.log("response", response);
+  console.log("response from fetchARticle", response);
 
   if (!response.ok) {
     const error = new Error("An error occurred while fetching the article");
@@ -48,21 +48,19 @@ export async function fetchArticle({ id, signal }) {
     throw error;
   }
 
-  const articleList = await response.json();
-
-  return articleList[0];
+  return response.json();
 }
 
 export async function createNewArticle(articleData) {
-  const token = getAuthToken();
+  console.log("articleData", articleData);
 
-  const response = await fetch(`http://localhost:8080/articles`, {
+  const response = await fetch(`http://localhost:8080/Articles/add`, {
     method: "POST",
     body: JSON.stringify(articleData),
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
+    credentials: "include",
   });
 
   if (!response.ok) {
@@ -83,24 +81,22 @@ export async function createNewArticle(articleData) {
 }
 
 export async function updateArticle({ id, article }) {
-  const token = getAuthToken();
-
   console.log("updateArticle id", id, article);
 
-  const response = await fetch(`http://localhost:8080/articles/${id}`, {
+  const response = await fetch(`http://localhost:8080/Articles/${id}`, {
     method: "PUT",
-    body: JSON.stringify({ article }),
+    body: JSON.stringify(article),
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
+    credentials: "include",
   });
 
   console.log("response from http.js updateArticle", response);
 
   if (!response.ok) {
     const errorData = await response.json();
-    console.log(errorData);
+    console.log("error data", errorData);
     const error = new Error(
       errorData.message || "Wystąpił błąd podczas edycji artykułu."
     );
@@ -114,15 +110,11 @@ export async function updateArticle({ id, article }) {
 }
 
 export async function deleteArticle(id) {
-  const token = getAuthToken();
-
   console.log("deleting article id", id);
 
-  const response = await fetch(`http://localhost:8080/articles/${id}`, {
+  const response = await fetch(`http://localhost:8080/Articles/${id}`, {
     method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    credentials: "include",
   });
 
   console.log("response from http.js deleteArticle", response);
@@ -205,24 +197,38 @@ export async function logout() {
   }
 }
 
-// export async function fetchUsernameById(id) {
-//   try {
-//     console.log("fetching username for id", id);
+export async function fetchCountArticlesAboveAverage({ queryKey }) {
+  const [, userId] = queryKey;
+  try {
+    console.log(
+      `Fetching articles count above global average for user: ${userId}`
+    );
 
-//     const response = await fetch(`http://localhost:8080/users/${id}/username`);
+    const response = await fetch(
+      `http://localhost:8080/Articles/articles-above-average/${userId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    );
 
-//     console.log("response", response);
-
-//     if (!response.ok) {
-//       throw new Error("Błąd podczas pobierania nazwy użytkownika.");
-//     }
-
-//     const data = await response.json();
-
-//     console.log("data", data);
-//     return data.username;
-//   } catch (error) {
-//     console.error(error);
-//     return null;
-//   }
-// }
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Response data:", data);
+      return data.articleCount;
+    } else {
+      console.error(
+        "Failed to fetch articles count:",
+        response.status,
+        response.statusText
+      );
+      return null;
+    }
+  } catch (error) {
+    console.error("Error while fetching articles count:", error);
+    return null;
+  }
+}
