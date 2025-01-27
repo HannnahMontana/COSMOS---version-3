@@ -1,5 +1,6 @@
 using backend.Data;
 using backend.Models;
+using backend.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,33 +21,6 @@ builder.Services.AddCors(options =>
                   .AllowCredentials();
         });
 });
-
-builder.Services.AddSwaggerGen(c =>
-{
-    c.AddSecurityDefinition("cookieAuth", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-    {
-        Name = "Cookie",
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
-        In = Microsoft.OpenApi.Models.ParameterLocation.Cookie,
-        Description = "Ustaw cookie sesji, np. .AspNetCore.Identity.Application"
-    });
-
-    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
-    {
-        {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-            {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                    Id = "cookieAuth"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-});
-
 
 // add services
 builder.Services.AddControllers();
@@ -85,6 +59,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SameSite = SameSiteMode.Strict;
 });
 
+// services helper functions
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<SessionService>();
 
 var app = builder.Build();
 
@@ -98,11 +75,6 @@ foreach (var role in roles)
     if (!await roleManager.RoleExistsAsync(role))
     {
         await roleManager.CreateAsync(new IdentityRole(role));
-        Console.WriteLine($"Rola '{role}' zosta³a utworzona.");
-    }
-    else
-    {
-        Console.WriteLine($"Rola '{role}' ju¿ istnieje.");
     }
 }
 

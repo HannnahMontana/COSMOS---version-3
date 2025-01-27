@@ -1,5 +1,6 @@
 ﻿using backend.Models;
 using backend.Dtos;
+using backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,18 +13,19 @@ namespace backend.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly SessionService _sessionService;
 
-        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, SessionService sessionService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _sessionService = sessionService;
         }
 
         // rejestracja
         [HttpPost("signup")]
         public async Task<IActionResult> Signup([FromBody] UserDto userDto)
         {
-            Console.WriteLine("Rejestrowanie użytkownika...");
             if (!ModelState.IsValid)
             {
                 return BadRequest(new { message = "Błędne dane rejestracji.", errors = ModelState.Values });
@@ -51,21 +53,11 @@ namespace backend.Controllers
             // logowanie po rejestracji
             await _signInManager.SignInAsync(user, isPersistent: false);
 
-            // dodanie informacji o użytkowniku do sesji
-            HttpContext.Session.SetString("user_id", user.Id);
-
-            // dodanie ciasteczka
-            Response.Cookies.Append("session_active", "true", new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddHours(1)
-            });
+            // sesji i ciasteczko
+            _sessionService.SetSessionAndCookie(user.Id);
 
             return Ok(new { message = "Rejestracja i logowanie zakończone sukcesem." });
         }
-
 
         // logowanie
         [HttpPost("login")]
@@ -89,21 +81,11 @@ namespace backend.Controllers
                 return Unauthorized(new { message = "Błędna nazwa użytkownika lub hasło." });
             }
 
-            // dodanie id usera do sesji
-            HttpContext.Session.SetString("user_id", user.Id);
-
-            // dodanie ciasteczka
-            Response.Cookies.Append("session_active", "true", new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddHours(1)
-            });
+            // sesja i ciasteczko
+            _sessionService.SetSessionAndCookie(user.Id);
 
             return Ok(new { message = "Zalogowano pomyślnie." });
         }
-
 
         // wylogowanie
         [HttpPost("logout")]
@@ -112,19 +94,18 @@ namespace backend.Controllers
         {
             await _signInManager.SignOutAsync();
 
-            HttpContext.Session.Remove("user_id");
-            Response.Cookies.Delete("session_active");
+            // usunięcie sesji i ciasteczka
+            _sessionService.ClearSessionAndCookie();
 
             return Ok(new { message = "Wylogowano pomyślnie." });
         }
-
 
         // sprawdzenie czy user jest zalogowany
         [HttpGet("check-auth")]
         [Authorize]
         public IActionResult CheckAuth()
         {
-            var userId = HttpContext.Session.GetString("user_id");
+            var userId = _sessionService.GetUserIdFromSession();
 
             if (string.IsNullOrEmpty(userId))
             {
@@ -133,7 +114,6 @@ namespace backend.Controllers
 
             return Ok(new { message = "Użytkownik jest zalogowany.", userId });
         }
-
 
         // dodanie roli Admin do usera
         [HttpPost("add-admin-role")]

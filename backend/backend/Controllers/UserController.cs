@@ -1,4 +1,5 @@
 ﻿using backend.Models;
+using backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,12 @@ namespace backend.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
+        private readonly SessionService _sessionService;
 
-        public UserController(UserManager<User> userManager)
+        public UserController(UserManager<User> userManager, SessionService sessionService)
         {
             _userManager = userManager;
+            _sessionService = sessionService;
         }
 
         // pobiera aktualnie zalogowanego usera
@@ -21,8 +24,8 @@ namespace backend.Controllers
         [Authorize]
         public async Task<IActionResult> GetCurrentUser()
         {
-            // sprawdzenie, czy sesja istnieje
-            var userId = HttpContext.Session.GetString("user_id");
+            // Pobranie user_id z sesji 
+            var userId = _sessionService.GetUserIdFromSession();
 
             if (string.IsNullOrEmpty(userId))
             {
@@ -30,15 +33,8 @@ namespace backend.Controllers
                 return Unauthorized(new { message = "Sesja wygasła lub użytkownik nie jest zalogowany." });
             }
 
-            // pobierz username
-            var userName = User.Identity?.Name;
-
-            if (string.IsNullOrEmpty(userName))
-            {
-                return Unauthorized(new { message = "Użytkownik nie jest zalogowany." });
-            }
-
-            var user = await _userManager.FindByNameAsync(userName);
+            // Pobierz dane użytkownika
+            var user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
             {
@@ -52,6 +48,5 @@ namespace backend.Controllers
                 roles = await _userManager.GetRolesAsync(user)
             });
         }
-
     }
 }

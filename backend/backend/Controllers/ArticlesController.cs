@@ -117,6 +117,7 @@ namespace backend.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateArticle(int id, [FromBody] UpdateArticleDto updatedArticleDto)
         {
             try
