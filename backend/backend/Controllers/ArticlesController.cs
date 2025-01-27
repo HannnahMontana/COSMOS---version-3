@@ -4,6 +4,7 @@ using backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
@@ -176,26 +177,34 @@ namespace backend.Controllers
         public async Task<IActionResult> GetArticlesAboveAverage(string userId)
         {
             try
-            {
+            { 
                 var user = await _userManager.FindByIdAsync(userId);
                 if (user == null)
                 {
                     return NotFound(new { message = "Nie znaleziono użytkownika o podanym ID." });
                 }
 
-                var articleCount = await _context.Articles
-                    .FromSqlInterpolated($@"
-                        SELECT dbo.GetArticleCountAboveAverageByUser({userId}) AS ArticleCount
-                    ")
-                    .Select(a => a.Id) 
-                    .CountAsync();
+                var connection = _context.Database.GetDbConnection();
+                await connection.OpenAsync();
 
-                return Ok(new
+                using var command = connection.CreateCommand();
+                command.CommandText = "SELECT dbo.GetArticleCountAboveAverageByUser(@UserId)";
+                command.Parameters.Add(new SqlParameter("@UserId", userId));
+
+                var result = await command.ExecuteScalarAsync();
+
+                if (result == null)
                 {
-                    message = "Pomyślnie pobrano liczbę artykułów powyżej średniej długości.",
-                    userId = user.Id,
-                    articleCount
-                });
+                    return Ok(new { userId = userId, articleCount = 0 });
+                }
+
+                int articleCount;
+                if (!int.TryParse(result.ToString(), out articleCount))
+                {
+                    return StatusCode(500, new { message = "Wystąpił problem z konwersją wyniku funkcji na liczbę całkowitą." });
+                }
+
+                return Ok(new { userId = userId, articleCount = articleCount });
             }
             catch (Exception ex)
             {
