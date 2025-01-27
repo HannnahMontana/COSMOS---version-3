@@ -1,8 +1,6 @@
 ﻿using backend.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 
 namespace backend.Data
 {
@@ -24,6 +22,17 @@ namespace backend.Data
                 .HasForeignKey(a => a.UserId)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            // funckja z sql
+            builder.HasDbFunction(() => GetArticleCountAboveAverageByUser(default))
+                   .HasName("GetArticleCountAboveAverageByUser");
+
+        }
+
+        // funckja z mssql
+        [DbFunction]
+        public static int GetArticleCountAboveAverageByUser(string userId)
+        {
+            throw new NotImplementedException("This method is mapped to a SQL function.");
         }
     }
 }

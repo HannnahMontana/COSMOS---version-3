@@ -1,5 +1,4 @@
 import { QueryClient } from "@tanstack/react-query";
-import { getAuthToken } from "./auth";
 
 export const queryClient = new QueryClient();
 

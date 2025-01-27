@@ -16,7 +16,6 @@ export default function ProtectedRoute({ children, adminOnly = false }) {
   }
 
   if (adminOnly && !isAdmin) {
-    // return <Navigate to="/not-authorized" />;
     return <NotAuthorized />;
   }
 

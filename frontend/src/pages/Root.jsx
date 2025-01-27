@@ -21,27 +21,19 @@ function RootLayout() {
     }
   }, [hash]);
 
-  // token menagement and user data fetching
+  // session menagement and user data fetching
   useEffect(() => {
-    console.log("root user data fetching.");
-
     const initializeUserSession = async () => {
-      console.log("Initializing user session...");
       const sessionActive = await fetchSession();
 
-      console.log("Session active:", sessionActive);
-
       if (sessionActive) {
-        console.log("Session is active, fetching user data...");
         fetchUser();
       } else {
-        console.log("No active session, clearing user...");
         clearUser();
       }
     };
 
     if (!user) {
-      console.log("No user data, initializing user session...");
       initializeUserSession();
     }
   }, [user, fetchUser, clearUser, location.pathname]);

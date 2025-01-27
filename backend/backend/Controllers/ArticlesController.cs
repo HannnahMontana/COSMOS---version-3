@@ -116,6 +116,7 @@ namespace backend.Controllers
             }
         }
 
+        // edycja artykułu
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateArticle(int id, [FromBody] UpdateArticleDto updatedArticleDto)
@@ -173,37 +174,25 @@ namespace backend.Controllers
             }
         }
 
+        // pobierz liczbe artykulow o dlugosci powyzej
+        // sredniej wszystkich artykulow dla podanego uzytkownika 
         [HttpGet("articles-above-average/{userId}")]
         [Authorize]
         public async Task<IActionResult> GetArticlesAboveAverage(string userId)
         {
             try
-            { 
+            {
                 var user = await _userManager.FindByIdAsync(userId);
                 if (user == null)
                 {
                     return NotFound(new { message = "Nie znaleziono użytkownika o podanym ID." });
                 }
 
-                var connection = _context.Database.GetDbConnection();
-                await connection.OpenAsync();
-
-                using var command = connection.CreateCommand();
-                command.CommandText = "SELECT dbo.GetArticleCountAboveAverageByUser(@UserId)";
-                command.Parameters.Add(new SqlParameter("@UserId", userId));
-
-                var result = await command.ExecuteScalarAsync();
-
-                if (result == null)
-                {
-                    return Ok(new { userId = userId, articleCount = 0 });
-                }
-
-                int articleCount;
-                if (!int.TryParse(result.ToString(), out articleCount))
-                {
-                    return StatusCode(500, new { message = "Wystąpił problem z konwersją wyniku funkcji na liczbę całkowitą." });
-                }
+                // wywolanie funckji sql
+                var articleCount = await _context.Articles
+                    .Where(a => a.UserId == userId)
+                    .Select(a => AppDbContext.GetArticleCountAboveAverageByUser(userId))
+                    .FirstOrDefaultAsync();
 
                 return Ok(new { userId = userId, articleCount = articleCount });
             }

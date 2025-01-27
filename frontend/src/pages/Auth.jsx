@@ -35,8 +35,6 @@ export default function Auth() {
 }
 
 export async function action({ request }) {
-  console.log("auth action");
-
   const searchParams = new URL(request.url).searchParams;
   const mode = searchParams.get("mode") || "login";
 
@@ -78,9 +76,6 @@ export async function action({ request }) {
     body: JSON.stringify(authData),
     credentials: "include",
   });
-
-  console.log("response: ", response);
-  console.log("response erros: ", response?.errors);
 
   if (response.status === 400 || response.status === 401) {
     return response;

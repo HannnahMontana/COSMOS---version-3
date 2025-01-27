@@ -14,6 +14,7 @@ import { UserContext } from "../context/UserContext";
 import ArticleForm from "../components/features/articles/ArticleForm";
 import FluidContainer from "../components/layout/FluidContainer";
 import classes from "./AddNewArticle.module.css";
+import commonClasses from "./CommonStyles.module.css";
 
 export default function AddNewArticle() {
   const { state } = useNavigation();
@@ -69,14 +70,15 @@ export default function AddNewArticle() {
   }
 
   return (
-    <FluidContainer
-      sectionId="section-edit-article"
-      addedClasses={classes.addArticleContainer}
-    >
-      <h1>Edytuj artykuł</h1>
-
-      {content}
-    </FluidContainer>
+    <section>
+      <h1 className={commonClasses.pageHeading}>Edytuj artykuł</h1>
+      <FluidContainer
+        sectionId="section-edit-article"
+        addedClasses={classes.addArticleContainer}
+      >
+        {content}
+      </FluidContainer>
+    </section>
   );
 }
 

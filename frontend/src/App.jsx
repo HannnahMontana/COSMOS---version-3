@@ -15,7 +15,6 @@ import AddNewArticle from "./pages/AddNewArticle.jsx";
 import EditEvent from "./pages/EditArticle.jsx";
 
 import { action as authAction } from "./pages/Auth";
-import { tokenLoader } from "./util/auth";
 import { action as logoutAction } from "./pages/Logout";
 import {
   loader as editEventLoader,
@@ -24,13 +23,11 @@ import {
 
 import { queryClient } from "./util/http";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
-// import NotAuthorized from "./pages/NotAuthorized.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
-    loader: tokenLoader,
     id: "root",
     children: [
       { index: true, element: <HomePage /> },

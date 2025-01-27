@@ -6,11 +6,7 @@ import { UserContext } from "../../context/UserContext";
 export default function MainNavigation() {
   const { user, clearUser, isAdmin } = useContext(UserContext);
 
-  console.log("MainNavigation user", user);
-  console.log("MainNavigation admin", isAdmin);
-
   const handleLogout = () => {
-    console.log("Clearing user from context...");
     clearUser();
   };
 

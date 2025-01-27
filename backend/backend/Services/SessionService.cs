@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace backend.Services
+﻿namespace backend.Services
 {
     public class SessionService
     {
