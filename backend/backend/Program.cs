@@ -65,6 +65,7 @@ builder.Services.AddScoped<SessionService>();
 
 var app = builder.Build();
 
+
 // roles
 var scope = app.Services.CreateScope();
 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
