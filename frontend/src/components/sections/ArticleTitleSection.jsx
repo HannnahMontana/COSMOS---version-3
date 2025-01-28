@@ -15,7 +15,6 @@ export default function ArticleTitleSection({
         sectionId="section-article-title"
         addedClasses={classes.section}
       >
-        {/* <div className={classes.articleTitleBg}></div> */}
         <img src={image} alt={altText} className={classes.articleBanner} />
 
         <h1>{title}</h1>
