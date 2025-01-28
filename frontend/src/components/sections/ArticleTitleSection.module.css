@@ -1,6 +1,8 @@
 .section {
-  overflow: hidden;
+  position: relative;
+  /* overflow: hidden; */
   min-height: 440px;
+  height: auto;
   padding: 5% 8%;
 }
 .section h1 {
@@ -17,16 +19,16 @@
 }
 .articleBanner {
   position: absolute;
-  top: 0;
+  top: -65px;
   left: 0;
   object-fit: cover;
   z-index: -1;
   width: 100%;
-  min-height: 440px;
-  height: 100%;
+  min-height: 490px;
+  height: calc(100% + 65px);
   overflow: hidden;
   filter: grayscale(100%);
-  opacity: 0.5;
+  opacity: 0.4;
 }
 .metadata {
   text-align: right;
@@ -34,7 +36,7 @@
   color: #ffffff9c;
   font-size: 1.2rem;
   padding-right: 2%;
-  background-color: #141414;
+  background-color: #0e0e0e;
   padding-top: 10px;
 }
 .author,
