@@ -11,7 +11,7 @@ export default function ArticleItem({ article }) {
       <div className={classes.boxImage}>
         <img
           className={classes.articleImage}
-          src={article.banner_url}
+          src={article.bannerUrl}
           alt={article.title}
         />
       </div>
